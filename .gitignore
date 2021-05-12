@@ -128,7 +128,7 @@ dmypy.json
 comments/
 logs/
 
-main.py
+# main.py
 test*.py
 
 *.csv
@@ -139,4 +139,3 @@ test*.py
 
 # except manually
 IDEA.py
-*.bat
