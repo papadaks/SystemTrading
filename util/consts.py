@@ -286,10 +286,6 @@ def get_fid(search_value):
     keys = [key for key, value in FID_CODES.items() if value == search_value]
     return keys[0]
 
-############################################################################
-# 프로젝트에서 사용할 변수들
-# 전략 최대보유가능 종목수
-RSI_STRATEGY_MAX_POSITION_COUNT = 10
 
-# LINE TOKEN
+# 발급 받은 LINE 토큰을 붙여 넣습니다.
 RSI_STRATEGY_MESSAGE_TOKEN = "발급받은_라인_토큰을_입력해주세요"

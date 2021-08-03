@@ -3,9 +3,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import pandas as pd
 import time
-
 import traceback
 from util.consts import *
+
 
 class Kiwoom(QAxWidget):
     def __init__(self):
@@ -27,7 +27,6 @@ class Kiwoom(QAxWidget):
 
     def _set_signal_slots(self):
         """API로 보내는 요청들을 받아올 slot을 등록하는 함수"""
-
         # 로그인 응답의 결과를 _on_login_connect을 통해 받도록 설정
         self.OnEventConnect.connect(self._login_slot)
 
@@ -58,7 +57,6 @@ class Kiwoom(QAxWidget):
         account_number = account_list.split(';')[0]
         print(account_number, account_list)
         return account_number
-        # return '8001238611'
 
     def get_code_list_by_market(self, market_type):
         code_list = self.dynamicCall("GetCodeListByMarket(QString)", market_type)
@@ -126,11 +124,6 @@ class Kiwoom(QAxWidget):
             self.tr_data = int(deposit)
             print(self.tr_data)
 
-        # elif rqname == "send_buy_order":
-        #     order_number = self.dynamicCall("GetCommData(QString, QString, int, QString", trcode, rqname, 0, "주문번호")
-        #     print('order_number', order_number)
-        #     self.tr_data = int(order_number)
-        #     # print(self.tr_data)
         elif rqname == "opt10075_req":
             for i in range(tr_data_cnt):
                 code = self.dynamicCall("GetCommData(QString, QString, int, QString", trcode, rqname, i, "종목코드")
@@ -337,18 +330,6 @@ class Kiwoom(QAxWidget):
             accum_volume = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid('누적거래량'))
             accum_volume = abs(int(accum_volume))
 
-            # # code를 key값으로 한 dict 변환
-            # self.universe_realtime_transaction_info[s_code] = {
-            #     '체결시간': signed_at,
-            #     '현재가': close,
-            #     '고가': high,
-            #     '시가': open,
-            #     '저가': low,
-            #     '(최우선)매도호가': top_priority_ask,
-            #     '(최우선)매수호가': top_priority_bid,
-            #     '누적거래량': accum_volume
-            # }
-
             # print(s_code, signed_at, close, high, open, low, top_priority_ask, top_priority_bid, accum_volume)
 
             # universe_realtime_transaction_info 딕셔너리에 종목코드가 키값으로 존재하지 않는다면 생성(해당 종목 실시간 데이터 최초 수신시)
@@ -366,16 +347,3 @@ class Kiwoom(QAxWidget):
                 "(최우선)매수호가": top_priority_bid,
                 "누적거래량": accum_volume
             })
-            # self.universe_realtime_transaction_info[s_code].update({"현재가": close})
-            # self.universe_realtime_transaction_info[s_code].update({"고가": high})
-            # self.universe_realtime_transaction_info[s_code].update({"시가": low})
-            # self.universe_realtime_transaction_info[s_code].update({"(최우선)매도호가": top_priority_ask})
-            # self.universe_realtime_transaction_info[s_code].update({"(최우선)매수호가": top_priority_bid})
-            # self.universe_realtime_transaction_info[s_code].update({"누적거래량": accum_volume})
-
-    def test(self):
-        self.dynamicCall("SetInputValue(QString, QString)", "종목코드", "000660;007700")
-        self.dynamicCall("CommRqData(QString, QString, int, QString)", "opt10003_req", "opt10003", 0, "0002")
-
-        self.tr_event_loop.exec_()
-        # return self.tr_data

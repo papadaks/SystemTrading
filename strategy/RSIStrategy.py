@@ -1,11 +1,10 @@
-import time
-
 from api.Kiwoom import *
 from util.make_up_universe import *
 from util.db_helper import *
 from util.time_helper import *
 from util.notifier import *
 import math
+
 
 class RSIStrategy(QThread):
     def __init__(self):
@@ -143,25 +142,26 @@ class RSIStrategy(QThread):
                     time.sleep(5 * 60)
                     continue
 
-                for idx, code in enumerate(self.universe.keys()):
+                # for idx, code in enumerate(self.universe.keys()):
+                for idx, code in enumerate(['000060']):
                     print('[{}/{}_{}]'.format(idx + 1, len(self.universe), self.universe[code]['code_name']))
                     time.sleep(0.5)
 
                     # (1)접수한 주문이 있는지 확인
                     if code in self.kiwoom.order.keys() and False:
-                        # (2)주문이 존재
+                        # (2)주문이 있음
                         print('접수 주문', self.kiwoom.order[code])
 
-                        # (2.1) 미체결 종목인지 확인하는 방법은 '미체결수량' 확인
+                        # (2.1) '미체결수량' 확인하여 미체결 종목인지 확인
                         if self.kiwoom.order[code]['미체결수량'] > 0:
                             pass
 
                     # (3)보유 종목인지 확인
-                    elif code in self.kiwoom.balance.keys():
-                        # print('보유 종목', self.kiwoom.balance[code])
-                        # (6)매도대상 확인
+                    elif code in self.kiwoom.balance.keys() or True:
+                        print('보유 종목', self.kiwoom.balance[code])
+                        # (6)매도 대상 확인
                         if self.check_sell_signal(code):
-                            # (7)매도대상이면 매도 주문 접수
+                            # (7)매도 대상이면 매도 주문 접수
                             self.order_sell(code)
 
                     else:
@@ -197,16 +197,13 @@ class RSIStrategy(QThread):
         print(universe_item)
         print(universe_item.keys())
 
-        df = universe_item['price_df']
-
-        #####################################################
         # (1)현재 체결정보가 존재하지 않는지 확인
         if code not in self.kiwoom.universe_realtime_transaction_info.keys():
             # 체결 정보가 없으면 더 이상 진행하지 않고 함수 종료
             print("매도대상 확인 과정에서 아직 체결정보가 없습니다.")
             return
 
-        # (2)실시간 체결 정보가 존재하면 현 시점의 시가 / 고가 / 저가 / 현재가 / 누적 거래량이 저장되어 있음
+        # (2)실시간 체결 정보가 존재하면 현시점의 시가 / 고가 / 저가 / 현재가 / 누적 거래량이 저장되어 있음
         open = self.kiwoom.universe_realtime_transaction_info[code]['시가']
         high = self.kiwoom.universe_realtime_transaction_info[code]['고가']
         low = self.kiwoom.universe_realtime_transaction_info[code]['저가']
@@ -216,7 +213,6 @@ class RSIStrategy(QThread):
         # 오늘 가격 데이터를 과거 가격 데이터(DataFrame)의 행으로 추가하기 위해 리스트로 만듦
         today_price_data = [open, high, low, close, volume]
 
-        # df = universe_item['price_df'].copy()
         df = universe_item['price_df'].copy()
 
         # 과거 가격 데이터에 금일 날짜로 데이터 추가
@@ -225,8 +221,10 @@ class RSIStrategy(QThread):
         # RSI(N) 계산
         period = 2  # 기준일 설정
         date_index = df.index.astype('str')
-        U = np.where(df['close'].diff(1) > 0, df['close'].diff(1), 0)  # df.diff를 통해 (기준일 종가 - 기준일 전일 종가)를 계산하여 0보다 크면 증가분을 넣고, 감소했으면 0을 넣어줌
-        D = np.where(df['close'].diff(1) < 0, df['close'].diff(1) * (-1), 0)  # df.diff를 통해 (기준일 종가 - 기준일 전일 종가)를 계산하여 0보다 작으면 감소분을 넣고, 증가했으면 0을 넣어줌
+        # df.diff를 통해 (기준일 종가 - 기준일 전일 종가)를 계산하여 0보다 크면 증가분을 넣고, 감소했으면 0을 넣어줌
+        U = np.where(df['close'].diff(1) > 0, df['close'].diff(1), 0)
+        # df.diff를 통해 (기준일 종가 - 기준일 전일 종가)를 계산하여 0보다 작으면 감소분을 넣고, 증가했으면 0을 넣어줌
+        D = np.where(df['close'].diff(1) < 0, df['close'].diff(1) * (-1), 0)
         AU = pd.DataFrame(U, index=date_index).rolling(window=period).mean()  # AU, period=2일 동안의 U의 평균
         AD = pd.DataFrame(D, index=date_index).rolling(window=period).mean()  # AD, period=2일 동안의 D의 평균
         RSI = AU / (AD + AU) * 100  # 0부터 1로 표현되는 RSI에 100을 곱함
@@ -255,11 +253,11 @@ class RSIStrategy(QThread):
 
     def check_buy_signal_and_order(self, code):
         """매수 대상인지 확인하고 주문을 접수하는 함수"""
-        # 매수가능 시간 확인
+        # 매수 가능 시간 확인
         if not check_adjacent_transaction_closed():
             return False
 
-        universe_item = self.universe[code]
+        universe_item = self.universe[code].copy()
 
         # (1)현재 체결정보가 존재하지 않는지 확인
         if code not in self.kiwoom.universe_realtime_transaction_info.keys():
@@ -285,8 +283,10 @@ class RSIStrategy(QThread):
         # RSI(N) 계산
         period = 2  # 기준일 설정
         date_index = df.index.astype('str')
-        U = np.where(df['close'].diff(1) > 0, df['close'].diff(1), 0)  # df.diff를 통해 (기준일 종가 - 기준일 전일 종가)를 계산하여 0보다 크면 증가분을 넣고, 감소했으면 0을 넣어줌
-        D = np.where(df['close'].diff(1) < 0, df['close'].diff(1) * (-1), 0)  # df.diff를 통해 (기준일 종가 - 기준일 전일 종가)를 계산하여 0보다 작으면 감소분을 넣고, 증가했으면 0을 넣어줌
+        # df.diff를 통해 (기준일 종가 - 기준일 전일 종가)를 계산하여 0보다 크면 증가분을 넣고, 감소했으면 0을 넣어줌
+        U = np.where(df['close'].diff(1) > 0, df['close'].diff(1), 0)
+        # df.diff를 통해 (기준일 종가 - 기준일 전일 종가)를 계산하여 0보다 작으면 감소분을 넣고, 증가했으면 0을 넣어줌
+        D = np.where(df['close'].diff(1) < 0, df['close'].diff(1) * (-1), 0)
         AU = pd.DataFrame(U, index=date_index).rolling(window=period).mean()  # AU, period=2일 동안의 U의 평균
         AD = pd.DataFrame(D, index=date_index).rolling(window=period).mean()  # AD, period=2일 동안의 D의 평균
         RSI = AU / (AD + AU) * 100  # 0부터 1로 표현되는 RSI에 100을 곱함
@@ -296,7 +296,7 @@ class RSIStrategy(QThread):
         df['ma20'] = df['close'].rolling(window=20, min_periods=1).mean()
         df['ma60'] = df['close'].rolling(window=60, min_periods=1).mean()
 
-        # 2 거래일 전 index를 구함
+        # 2 거래일 전 날짜(index)를 구함
         idx = df.index.get_loc(datetime.now().strftime('%Y%m%d')) - 2
 
         # 위 index로부터 2 거래일 전 종가를 얻어옴
@@ -309,14 +309,14 @@ class RSIStrategy(QThread):
         ma20 = df[-1:]['ma20'].values[0]
         ma60 = df[-1:]['ma60'].values[0]
 
-        # (3)매수신호 확인 (매수조건에 부합한다면 다음 코드로 넘어가 주문접수한다.)
+        # (3)매수 신호 확인(조건에 부합하면 주문 접수)
         if ma20 > ma60 and rsi < 5 and price_diff < -2:
             # (4)이미 보유한 종목, 매수 주문 접수한 종목의 합이 보유 가능 최대치(10개)라면 더 이상 매수 불가하므로 종료
             if (self.get_balance_count() + self.get_buy_order_count()) >= 10:
                 return
 
             # (5)주문에 사용할 금액 계산(10은 최대 보유 종목 수로써 consts.py에 상수로 만들어 관리하는 것도 좋음)
-            budget = round(self.deposit / (10 - (self.get_balance_count() + self.get_buy_order_count())))
+            budget = self.deposit / (10 - (self.get_position_count() + self.get_buy_order_count()))
 
             # 최우선 매도호가 확인
             bid = self.kiwoom.universe_realtime_transaction_info[code]['(최우선)매수호가']
@@ -328,7 +328,7 @@ class RSIStrategy(QThread):
             if quantity < 1:
                 return
 
-            # (8)현재 예수금에서 수수료를 곱한 투입금액(주문 수량 * 주문 가격)을 제외해서 계산
+            # (8)현재 예수금에서 수수료를 곱한 실제 투입금액(주문 수량 * 주문 가격)을 제외해서 계산
             amount = quantity * bid
             self.deposit = self.deposit - amount * 1.00015
 
@@ -346,14 +346,14 @@ class RSIStrategy(QThread):
     def get_balance_count(self):
         """매도 주문이 접수되지 않은 보유 종목 수를 계산하는 함수"""
         balance_count = len(self.kiwoom.balance)
-        # kiwoom balance에 존재하는 종목이 매도 주문 접수 이후 체결이 되었다면 보유 종목에서 제외시킴
+        # kiwoom balance에 존재하는 종목이 매도 주문 접수되었다면 보유 종목에서 제외시킴
         for code in self.kiwoom.order.keys():
             if code in self.kiwoom.balance and self.kiwoom.order[code]['주문구분'] == "매도" and self.kiwoom.order[code]['미체결수량'] == 0:
                 balance_count = balance_count - 1
         return balance_count
 
     def get_buy_order_count(self):
-        """체결이 다 완료되지 않은 매수 주문 종목 수를 계산하는 함수"""
+        """매수 주문 종목 수를 계산하는 함수"""
         buy_order_count = 0
         # 아직 체결이 완료되지 않은 매수 주문
         for code in self.kiwoom.order.keys():
