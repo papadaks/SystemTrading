@@ -142,13 +142,12 @@ class RSIStrategy(QThread):
                     time.sleep(5 * 60)
                     continue
 
-                # for idx, code in enumerate(self.universe.keys()):
-                for idx, code in enumerate(['000060']):
+                for idx, code in enumerate(self.universe.keys()):
                     print('[{}/{}_{}]'.format(idx + 1, len(self.universe), self.universe[code]['code_name']))
                     time.sleep(0.5)
 
                     # (1)접수한 주문이 있는지 확인
-                    if code in self.kiwoom.order.keys() and False:
+                    if code in self.kiwoom.order.keys():
                         # (2)주문이 있음
                         print('접수 주문', self.kiwoom.order[code])
 
@@ -157,7 +156,7 @@ class RSIStrategy(QThread):
                             pass
 
                     # (3)보유 종목인지 확인
-                    elif code in self.kiwoom.balance.keys() or True:
+                    elif code in self.kiwoom.balance.keys():
                         print('보유 종목', self.kiwoom.balance[code])
                         # (6)매도 대상 확인
                         if self.check_sell_signal(code):
@@ -251,6 +250,10 @@ class RSIStrategy(QThread):
 
         order_result = self.kiwoom.send_order('send_sell_order', '1001', 2, code, quantity, ask, '00')
 
+        # LINE 메시지를 보내는 부분
+        message = "[{}]sell order is done! quantity:{}, ask:{}".format(code, quantity, ask)
+        send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
+
     def check_buy_signal_and_order(self, code):
         """매수 대상인지 확인하고 주문을 접수하는 함수"""
         # 매수 가능 시간 확인
@@ -316,7 +319,7 @@ class RSIStrategy(QThread):
                 return
 
             # (5)주문에 사용할 금액 계산(10은 최대 보유 종목 수로써 consts.py에 상수로 만들어 관리하는 것도 좋음)
-            budget = self.deposit / (10 - (self.get_position_count() + self.get_buy_order_count()))
+            budget = self.deposit / (10 - (self.get_balance_count() + self.get_buy_order_count()))
 
             # 최우선 매도호가 확인
             bid = self.kiwoom.universe_realtime_transaction_info[code]['(최우선)매수호가']
@@ -338,6 +341,14 @@ class RSIStrategy(QThread):
 
             # (9)계산을 바탕으로 지정가 매수 주문 접수
             order_result = self.kiwoom.send_order('send_buy_order', '1001', 1, code, quantity, bid, '00')
+
+            # LINE 메시지를 보내는 부분
+            message = "[{}]buy order is done! quantity:{}, bid:{}, order_result:{}, deposit:{}".format(code,quantity, bid,order_result,self.deposit)
+            send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
+
+            # LINE 메시지 보내는 부분2
+            message = "현재 보유 종목수 : {}, 현재 매수주문접수 종목수 : {}".format(self.get_balance_count(), self.get_buy_order_count())
+            send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
 
         # 매수신호가 없다면 종료
         else:
