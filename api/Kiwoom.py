@@ -1,9 +1,8 @@
 from PyQt5.QAxContainer import *
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
-import pandas as pd
 import time
-import traceback
+import pandas as pd
 from util.consts import *
 
 
@@ -30,10 +29,13 @@ class Kiwoom(QAxWidget):
         # 로그인 응답의 결과를 _on_login_connect을 통해 받도록 설정
         self.OnEventConnect.connect(self._login_slot)
 
+        # TR의 응답 결과를 _on_receive_tr_data를 통해 받도록 설정
         self.OnReceiveTrData.connect(self._on_receive_tr_data)
 
+        # TR/주문 메시지를 _on_receive_msg을 통해 받도록 설정
         self.OnReceiveMsg.connect(self._on_receive_msg)
 
+        # 주문 접수/체결 결과를 _on_chejan_slot을 통해 받도록 설정
         self.OnReceiveChejanData.connect(self._on_chejan_slot)
 
         self.OnReceiveRealData.connect(self._on_receive_real_data)
