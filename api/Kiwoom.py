@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import time
 import pandas as pd
+import traceback
 from util.consts import *
 
 
@@ -38,6 +39,7 @@ class Kiwoom(QAxWidget):
         # 주문 접수/체결 결과를 _on_chejan_slot을 통해 받도록 설정
         self.OnReceiveChejanData.connect(self._on_chejan_slot)
 
+        # 실시간 체결 데이터를 _on_receive_real_data을 통해 받도록 설정
         self.OnReceiveRealData.connect(self._on_receive_real_data)
 
     def _login_slot(self, err_code):
