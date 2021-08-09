@@ -226,9 +226,7 @@ class Kiwoom(QAxWidget):
         return self.tr_data
 
     def send_order(self, rqname, screen_no, order_type, code, order_quantity, order_price, order_classification, origin_order_number=""):
-        order_result = self.dynamicCall("SendOrder(QString, QString, QString, int, QString, int, int, QString, QString)",
-            [rqname, screen_no, self.account_number, order_type, code, order_quantity, order_price,order_classification, origin_order_number])
-        self.tr_event_loop.exec_()
+        order_result = self.dynamicCall("SendOrder(QString, QString, QString, int, QString, int, int, QString, QString)",[rqname, screen_no, self.account_number, order_type, code, order_quantity, order_price,order_classification, origin_order_number])
         return order_result
 
     def _on_receive_msg(self, screen_no, rqname, trcode, msg):

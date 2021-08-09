@@ -193,9 +193,6 @@ class RSIStrategy(QThread):
         """매도대상인지 확인하는 함수"""
         universe_item = self.universe[code]
 
-        print(universe_item)
-        print(universe_item.keys())
-
         # (1)현재 체결정보가 존재하지 않는지 확인
         if code not in self.kiwoom.universe_realtime_transaction_info.keys():
             # 체결 정보가 없으면 더 이상 진행하지 않고 함수 종료
@@ -251,7 +248,7 @@ class RSIStrategy(QThread):
         order_result = self.kiwoom.send_order('send_sell_order', '1001', 2, code, quantity, ask, '00')
 
         # LINE 메시지를 보내는 부분
-        message = "[{}]sell order is done! quantity:{}, ask:{}".format(code, quantity, ask)
+        message = "[{}]sell order is done! quantity:{}, ask:{}, order_result:{}".format(code, quantity, ask, order_result)
         send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
 
     def check_buy_signal_and_order(self, code):
@@ -343,11 +340,7 @@ class RSIStrategy(QThread):
             order_result = self.kiwoom.send_order('send_buy_order', '1001', 1, code, quantity, bid, '00')
 
             # LINE 메시지를 보내는 부분
-            message = "[{}]buy order is done! quantity:{}, bid:{}, order_result:{}, deposit:{}".format(code,quantity, bid,order_result,self.deposit)
-            send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
-
-            # LINE 메시지 보내는 부분2
-            message = "현재 보유 종목수 : {}, 현재 매수주문접수 종목수 : {}".format(self.get_balance_count(), self.get_buy_order_count())
+            message = "[{}]buy order is done! quantity:{}, bid:{}, order_result:{}, deposit:{}".format(code, quantity, bid, order_result, self.deposit)
             send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
 
         # 매수신호가 없다면 종료
