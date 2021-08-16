@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import time
 import pandas as pd
-import traceback
 from util.consts import *
 
 

@@ -4,6 +4,7 @@ from util.db_helper import *
 from util.time_helper import *
 from util.notifier import *
 import math
+import traceback
 
 
 class RSIStrategy(QThread):
@@ -14,6 +15,12 @@ class RSIStrategy(QThread):
 
         # 유니버스 정보를 담을 딕셔너리
         self.universe = {}
+
+        # 계좌 예수금
+        self.deposit = 0
+
+        # 초기화 함수 성공 여부 확인 변수
+        self.is_init_success = False
 
         self.init_strategy()
 
@@ -257,7 +264,7 @@ class RSIStrategy(QThread):
         if not check_adjacent_transaction_closed():
             return False
 
-        universe_item = self.universe[code].copy()
+        universe_item = self.universe[code]
 
         # (1)현재 체결정보가 존재하지 않는지 확인
         if code not in self.kiwoom.universe_realtime_transaction_info.keys():
@@ -339,8 +346,11 @@ class RSIStrategy(QThread):
             # (9)계산을 바탕으로 지정가 매수 주문 접수
             order_result = self.kiwoom.send_order('send_buy_order', '1001', 1, code, quantity, bid, '00')
 
+            # _on_chejan_slot가 늦게 동작할 수도 있기 때문에 미리 약간의 정보를 넣어둠
+            self.kiwoom.order[code] = {'주문구분': '매수', '미체결수량': quantity}
+
             # LINE 메시지를 보내는 부분
-            message = "[{}]buy order is done! quantity:{}, bid:{}, order_result:{}, deposit:{}".format(code, quantity, bid, order_result, self.deposit)
+            message = "[{}]buy order is done! quantity:{}, bid:{}, order_result:{}, deposit:{}, get_balance_count:{}, get_buy_order_count:{}, balance_len:{}".format(code, quantity, bid, order_result, self.deposit, self.get_balance_count(), self.get_buy_order_count(), len(self.kiwoom.balance))
             send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
 
         # 매수신호가 없다면 종료
