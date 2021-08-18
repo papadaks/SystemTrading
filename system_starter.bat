@@ -7,7 +7,7 @@ cd C:\Users\82103\PycharmProjects\SystemTrading
 call activate system_trading_py38_32
 @taskkill /f /im "python.exe"
 set loop=0
-set max_loop=600
+set max_loop=900
 
 :loop
 set /a loop+=1
