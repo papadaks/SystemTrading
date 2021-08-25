@@ -180,21 +180,21 @@ class RSIStrategy(QThread):
                 send_message(traceback.format_exc(), RSI_STRATEGY_MESSAGE_TOKEN)
 
     def set_universe_real_time(self):
-       """유니버스 실시간 체결정보 수신 등록하는 함수"""
-       # 임의의 fid를 하나 전달하기 위한 코드(아무 값의 fid라도 하나 이상 전달해야 정보를 얻어올 수 있음)
-       fids = get_fid("체결시간")
+        """유니버스 실시간 체결정보 수신 등록하는 함수"""
+        # 임의의 fid를 하나 전달하기 위한 코드(아무 값의 fid라도 하나 이상 전달해야 정보를 얻어올 수 있음)
+        fids = get_fid("체결시간")
 
-       # 장운영구분을 확인하고 싶으면 사용할 코드
-       # self.kiwoom.set_real_reg("1000", "", get_fid("장운영구분"), "0")
+        # 장운영구분을 확인하고 싶으면 사용할 코드
+        # self.kiwoom.set_real_reg("1000", "", get_fid("장운영구분"), "0")
 
-       # universe 딕셔너리의 key값들은 종목코드들을 의미
-       codes = self.universe.keys()
+        # universe 딕셔너리의 key값들은 종목코드들을 의미
+        codes = self.universe.keys()
 
-       # 종목코드들을 ';'을 기준으로 묶어주는 작업
-       codes = ";".join(map(str, codes))
+        # 종목코드들을 ';'을 기준으로 묶어주는 작업
+        codes = ";".join(map(str, codes))
 
-       # 화면번호 9999에 종목코드들의 실시간 체결정보 수신을 요청
-       self.kiwoom.set_real_reg("9999", codes, fids, "0")
+        # 화면번호 9999에 종목코드들의 실시간 체결정보 수신을 요청
+        self.kiwoom.set_real_reg("9999", codes, fids, "0")
 
     def check_sell_signal(self, code):
         """매도대상인지 확인하는 함수"""
@@ -255,7 +255,8 @@ class RSIStrategy(QThread):
         order_result = self.kiwoom.send_order('send_sell_order', '1001', 2, code, quantity, ask, '00')
 
         # LINE 메시지를 보내는 부분
-        message = "[{}]sell order is done! quantity:{}, ask:{}, order_result:{}".format(code, quantity, ask, order_result)
+        message = "[{}]sell order is done! quantity:{}, ask:{}, order_result:{}".format(code, quantity, ask,
+                                                                                        order_result)
         send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
 
     def check_buy_signal_and_order(self, code):
@@ -303,6 +304,10 @@ class RSIStrategy(QThread):
         df['ma20'] = df['close'].rolling(window=20, min_periods=1).mean()
         df['ma60'] = df['close'].rolling(window=60, min_periods=1).mean()
 
+        rsi = df[-1:]['RSI(2)'].values[0]
+        ma20 = df[-1:]['ma20'].values[0]
+        ma60 = df[-1:]['ma60'].values[0]
+
         # 2 거래일 전 날짜(index)를 구함
         idx = df.index.get_loc(datetime.now().strftime('%Y%m%d')) - 2
 
@@ -311,10 +316,6 @@ class RSIStrategy(QThread):
 
         # 2 거래일 전 종가와 현재가를 비교함
         price_diff = (close - close_2days_ago) / close_2days_ago * 100
-
-        rsi = df[-1:]['RSI(2)'].values[0]
-        ma20 = df[-1:]['ma20'].values[0]
-        ma60 = df[-1:]['ma60'].values[0]
 
         # (3)매수 신호 확인(조건에 부합하면 주문 접수)
         if ma20 > ma60 and rsi < 5 and price_diff < -2:
@@ -337,7 +338,7 @@ class RSIStrategy(QThread):
 
             # (8)현재 예수금에서 수수료를 곱한 실제 투입금액(주문 수량 * 주문 가격)을 제외해서 계산
             amount = quantity * bid
-            self.deposit = self.deposit - amount * 1.00015
+            self.deposit = math.floor(self.deposit - amount * 1.00015)
 
             # (8)예수금이 0보다 작아질 정도로 주문할 수는 없으므로 체크
             if self.deposit < 0:
@@ -350,7 +351,9 @@ class RSIStrategy(QThread):
             self.kiwoom.order[code] = {'주문구분': '매수', '미체결수량': quantity}
 
             # LINE 메시지를 보내는 부분
-            message = "[{}]buy order is done! quantity:{}, bid:{}, order_result:{}, deposit:{}, get_balance_count:{}, get_buy_order_count:{}, balance_len:{}".format(code, quantity, bid, order_result, self.deposit, self.get_balance_count(), self.get_buy_order_count(), len(self.kiwoom.balance))
+            message = "[{}]buy order is done! quantity:{}, bid:{}, order_result:{}, deposit:{}, get_balance_count:{}, get_buy_order_count:{}, balance_len:{}".format(
+                code, quantity, bid, order_result, self.deposit, self.get_balance_count(), self.get_buy_order_count(),
+                len(self.kiwoom.balance))
             send_message(message, RSI_STRATEGY_MESSAGE_TOKEN)
 
         # 매수신호가 없다면 종료
