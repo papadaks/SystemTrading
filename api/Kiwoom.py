@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import time
 import pandas as pd
-from util.consts import *
+from util.const import *
 
 
 class Kiwoom(QAxWidget):
