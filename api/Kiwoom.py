@@ -86,7 +86,7 @@ class Kiwoom(QAxWidget):
             self.tr_event_loop.exec_()
 
             for key, val in self.tr_data.items():
-                ohlcv[key][-1:] = val
+                ohlcv[key] += val
 
         df = pd.DataFrame(ohlcv, columns=['open', 'high', 'low', 'close', 'volume'], index=ohlcv['date'])
 
