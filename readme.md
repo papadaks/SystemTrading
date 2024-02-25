@@ -38,3 +38,6 @@ Kiwoom API는 ActiveX Control인 OCX방식으로 연결하게 되어 있음. (32
 |--- strategy package
 |------ __init__.py
 ---- main.py
+
+
+- 실현 계획
