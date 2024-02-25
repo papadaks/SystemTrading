@@ -28,6 +28,9 @@ Kiwoom API는 ActiveX Control인 OCX방식으로 연결하게 되어 있음. (32
 (base) conda activate py38_32
 (py38_32) pip install pyqt5 
 
+- 키움 API 
+https://www.kiwoom.com/h/customer/download/VOpenApiInfoView?dummyVal=0
+
 
 - System Trading 구조
 |--- api package
@@ -41,3 +44,5 @@ Kiwoom API는 ActiveX Control인 OCX방식으로 연결하게 되어 있음. (32
 
 
 - 실현 계획
+1) 관심종목 리스트를 화면에 보여주기
+2) 관심종목별 시가를 확인하고, 장 시작 후 시가 아래로 갔다가 시가를 돌파할때 1차 매수 하기. 
