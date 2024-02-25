@@ -17,3 +17,23 @@ windows
 -- python (32bits 확인)
 -- import platform
 -- print(Platform.architecture())
+
+- vscode 설치
+https://code.visualstudio.com/download
+
+- PyQt5
+Kiwoom API는 ActiveX Control인 OCX방식으로 연결하게 되어 있음. (32bits)
+(base) conda env list
+(base) conda activate py38_32
+(py38_32) pip install pyqt5 
+
+
+- System Trading 구조
+|--- api package
+|------ __init__.py  // api 폴더가 package임을 표시한 빈파일
+|------ Kiwoom.py 
+|--- util package
+|------ __init__.py
+|--- strategy package
+|------ __init__.py
+---- main.py
