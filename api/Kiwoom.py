@@ -21,6 +21,7 @@ class Kiwoom(QAxWidget):
         self.balance = {}
         self.universe_realtime_transaction_info = {}
 
+    #  Kiwoom class가 api를 사용할 수 있도록
     def _make_kiwoom_instance(self):
         self.setControl("KHOPENAPI.KHOpenAPICtrl.1")
 
