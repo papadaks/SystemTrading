@@ -17,6 +17,7 @@ windows
 -- python (32bits 확인)
 -- import platform
 -- print(Platform.architecture())
+- 코드 실행시 발행하는 에러는 pip install로 설치하면 됨. 
 
 - vscode 설치
 https://code.visualstudio.com/download
