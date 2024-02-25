@@ -5,3 +5,15 @@ https://technote.kr/353
 
 
 # 환경설정
+windows 
+- anaconda 설치 (kiwoom api는 32bits) : 64bits용으로 설치하였음. 
+-- conda 가상 환경을 만들고 32bits로 변경할 수 있음. 
+-- https://separang.tistory.com/107 
+-- conda create -n '가상환경 이름'  // 예 py38_32
+-- conda activate '가상환경 이름'
+-- conda config --env --set subdir win-32
+-- conda install python=3.8        // 가상환경 안에서 설치해야 함. 
+-- conda info
+-- python (32bits 확인)
+-- import platform
+-- print(Platform.architecture())
