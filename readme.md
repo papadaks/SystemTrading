@@ -30,6 +30,11 @@ Kiwoom API는 ActiveX Control인 OCX방식으로 연결하게 되어 있음. (32
 
 - 키움 API 
 https://www.kiwoom.com/h/customer/download/VOpenApiInfoView?dummyVal=0
+pykiwoom은 계속해서 업데이트 되고 있는 모듈입니다. 한 번 설치한 후에도 최신 버전이 나왔다면 여러분도 새로 설치를 해야합니다. 기존에 설치된 버전을 지우고 새로 설치하려면 아나콘다 프롬프트를 실행한 후 다음과 같이 입력하면 됩니다.
+pip install -U pykiwoom
+최근 버전은 다음 웹 페이지를 통해 확인할 수 있습니다.
+https://pypi.org/project/pykiwoom/
+
 
 
 - System Trading 구조
