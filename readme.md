@@ -46,3 +46,9 @@ https://www.kiwoom.com/h/customer/download/VOpenApiInfoView?dummyVal=0
 - 실현 계획
 1) 관심종목 리스트를 화면에 보여주기
 2) 관심종목별 시가를 확인하고, 장 시작 후 시가 아래로 갔다가 시가를 돌파할때 1차 매수 하기. 
+
+
+
+- 참고사이트
+https://wikidocs.net/book/1173  // 퀀트투자를 위한 키움증권 API (파이썬 버전)
+
