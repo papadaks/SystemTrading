@@ -59,3 +59,4 @@ https://wikidocs.net/book/1173  // 퀀트투자를 위한 키움증권 API (파�
 https://doc.qt.io/qtforpython-6/examples/example_axcontainer_axviewer.html  // Qt for python, win32지원 안함. pyQt5로해야 함.
 https://doc.qt.io/qt-5/reference-overview.html 
 https://doc.qt.io/qtforpython-5/gettingstarted.html 
+https://trustyou.tistory.com/  // 참고사이트
