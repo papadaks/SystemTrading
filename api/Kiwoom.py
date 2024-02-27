@@ -9,7 +9,7 @@ from util.const import *
 class Kiwoom(QAxWidget):
     def __init__(self):
         super().__init__()
-        
+
         self._make_kiwoom_instance()
         self._set_signal_slots()
         self._comm_connect()
@@ -20,12 +20,14 @@ class Kiwoom(QAxWidget):
         4. 로그인 요청에 대한 응답을 _set_signal_slots를 사용하여 등록한 슬롯(_login_slot)에서 받아 옵니다.
         """
         
+        # account 정보 800111111; (;로 구분)
         self.account_number = self.get_account_number()
 
         self.tr_event_loop = QEventLoop()
 
         self.order = {}
         self.balance = {}
+        # 실시간 체결정보를 저장할 딕셔너리 선언
         self.universe_realtime_transaction_info = {}
 
     #  Kiwoom class가 api를 사용할 수 있도록
@@ -39,12 +41,11 @@ class Kiwoom(QAxWidget):
         # 로그인 응답의 결과를 _on_login_connect을 통해 받도록 설정
         self.OnEventConnect.connect(self._login_slot)
 
+
         # TR의 응답 결과를 _on_receive_tr_data를 통해 받도록 설정
         self.OnReceiveTrData.connect(self._on_receive_tr_data)
-
         # TR/주문 메시지를 _on_receive_msg을 통해 받도록 설정
         self.OnReceiveMsg.connect(self._on_receive_msg)
-
         # 주문 접수/체결 결과를 _on_chejan_slot을 통해 받도록 설정
         self.OnReceiveChejanData.connect(self._on_chejan_slot)
 
@@ -67,6 +68,12 @@ class Kiwoom(QAxWidget):
         self.login_event_loop = QEventLoop()
         self.login_event_loop.exec_()
 
+    """
+    ACCOUNT_CNT : 게좌 수, ACCLIST or ACCNO : 목록;목록
+    USER_ID : id, USER_NAME : name 
+    GetServerGubun : 1-모의, 나머지-실서버, KEY_BSECGB : 키보드 보안 해지 여부 (0-정상, 1-해지)
+    FIREW_SECGB : 방화벽 설정 여부 (0-미설정, 1-설정, 2-해지)
+    """
     def get_account_number(self, tag="ACCNO"):
         account_list = self.dynamicCall("GetLoginInfo(QString)", tag)  # tag로 전달한 요청에 대한 응답을 받아옴
         account_number = account_list.split(';')[0]
@@ -311,6 +318,12 @@ class Kiwoom(QAxWidget):
         self.tr_event_loop.exec_()
         return self.tr_data
 
+    """
+        str_screen_no:화면번호, str_code_list:종목코드리스트, str_fidlist:실시간fid리스트, str_opt_type:실시간 등록타입, 0 or 1
+        한번에 100종목 100fid개수 가능 
+        fid는 고유 번호들 - util/const.py 에 정의해 두었음. 
+        opt_type :0 이면 초기화 신규 등록, 1이면 추가해서 등록 
+    """
     def set_real_reg(self, str_screen_no, str_code_list, str_fid_list, str_opt_type):
         self.dynamicCall("SetRealReg(QString, QString, QString, QString)", str_screen_no, str_code_list, str_fid_list, str_opt_type)
         time.sleep(0.5)
