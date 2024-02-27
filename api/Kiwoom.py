@@ -9,10 +9,17 @@ from util.const import *
 class Kiwoom(QAxWidget):
     def __init__(self):
         super().__init__()
+        
         self._make_kiwoom_instance()
         self._set_signal_slots()
         self._comm_connect()
-
+        """ Login 과정 
+        1. 설치한 API를 사용할 수 있도록 설정합니다. (_make_kiwoom_instance)
+        2. 로그인, 실시간 정보, 기타 제공받을 수 있는 데이터에 대한 응답을 받을 수 있는 slot함수들을 등록합니다. (_set_signal_slots)
+        3. 로그인 요청을 보냅니다 (_comm_connect)
+        4. 로그인 요청에 대한 응답을 _set_signal_slots를 사용하여 등록한 슬롯(_login_slot)에서 받아 옵니다.
+        """
+        
         self.account_number = self.get_account_number()
 
         self.tr_event_loop = QEventLoop()
@@ -26,7 +33,9 @@ class Kiwoom(QAxWidget):
         self.setControl("KHOPENAPI.KHOpenAPICtrl.1")
 
     def _set_signal_slots(self):
-        """API로 보내는 요청들을 받아올 slot을 등록하는 함수"""
+        """ ****** API로 보내는 요청들을 받아올 slot을 등록하는 함수
+            목적에 맞게 여러개의 slot을 설정하고 설정할 수 있음. 
+        """
         # 로그인 응답의 결과를 _on_login_connect을 통해 받도록 설정
         self.OnEventConnect.connect(self._login_slot)
 
@@ -51,8 +60,10 @@ class Kiwoom(QAxWidget):
         self.login_event_loop.exit()
 
     def _comm_connect(self):
+        # API서버로 로그인을 요청하는 함수. 
         self.dynamicCall("CommConnect()")
 
+        # 로그인 시도 결과에 대해 응답 대기 시작. 
         self.login_event_loop = QEventLoop()
         self.login_event_loop.exec_()
 

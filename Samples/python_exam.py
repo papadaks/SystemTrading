@@ -74,3 +74,14 @@ print(s_price_dict['시가'])
 print ('52주최고가' in s_price_dict)
 print(s_price_dict.keys())
 print(s_price_dict.values())
+
+#반복문
+i = 0, 1, 3
+for i in range(len(i)):
+    print(i)
+    print("{} * {} = {}".format(2, i, 2*i))
+
+for i in s_price_dict.values():
+    print(i)
+
+#break, continue, pass 
