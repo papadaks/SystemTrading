@@ -99,7 +99,7 @@ print (target_codes)
 # print (target_codes['005930'].keys)
 
 # 주문할 ticker를 담을 딕셔너리
-        self.target_items = [
+self.target_items = [
             {
             '종목코드' : "041020",
             'is시가Down'    : False,   #시가 아래로 내려가면 True
@@ -117,6 +117,6 @@ print (target_codes)
             '매도여부' : 0,     # 0 매도안함, 1 매도
             },
             ]
-        for item in self.target_items:
-            print(item)
-            print(item['종목코드'])
+for item in self.target_items:
+    print(item)
+    print(item['종목코드'])
