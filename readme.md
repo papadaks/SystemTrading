@@ -60,3 +60,11 @@ https://doc.qt.io/qtforpython-6/examples/example_axcontainer_axviewer.html  // Q
 https://doc.qt.io/qt-5/reference-overview.html 
 https://doc.qt.io/qtforpython-5/gettingstarted.html 
 https://trustyou.tistory.com/  // 참고사이트
+
+
+
+- 기능개발 항목
+1. csv 파일에서 읽어서 target items 초기화 하기. (프로그램 시작시)
+i) 파일은 strategy 폴더에 있음. (target_times.csv) 
+: 한글 깨지는 문제는 확인 필요 마지막 ticker값만 얻어 오면 됨.
+: 추가적인 초기 정보 (전일가등)등은 hts에서 관심종목 필드 추가/삭제를 통해 가져 올 수 있음.  
