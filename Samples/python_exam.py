@@ -85,3 +85,38 @@ for i in s_price_dict.values():
     print(i)
 
 #break, continue, pass 
+    
+target_codes = {}
+target_codes ['005930'] = {
+            '종목코드' : "005930",
+            'is시가Down'    : False,   #시가 아래로 내려가면 True
+            'is시가UpAgain' : False,   #시가 아래로 갔다 올라오면 True
+            '감시시작' : 0,     # 0 감시시작x 1 시작 
+            '매수여부' : 0,     # 0 매수안함, 1 매수
+            '매도여부' : 0,     # 0 매도안함, 1 매도
+            }
+print (target_codes)
+# print (target_codes['005930'].keys)
+
+# 주문할 ticker를 담을 딕셔너리
+        self.target_items = [
+            {
+            '종목코드' : "041020",
+            'is시가Down'    : False,   #시가 아래로 내려가면 True
+            'is시가UpAgain' : False,   #시가 아래로 갔다 올라오면 True
+            '감시시작' : 0,     # 0 감시시작x 1 시작 
+            '매수여부' : 0,     # 0 매수안함, 1 매수
+            '매도여부' : 0,     # 0 매도안함, 1 매도
+            },
+             {
+            '종목코드' : "041020",
+            'is시가Down'    : False,   #시가 아래로 내려가면 True
+            'is시가UpAgain' : False,   #시가 아래로 갔다 올라오면 True
+            '감시시작' : 0,     # 0 감시시작x 1 시작 
+            '매수여부' : 0,     # 0 매수안함, 1 매수
+            '매도여부' : 0,     # 0 매도안함, 1 매도
+            },
+            ]
+        for item in self.target_items:
+            print(item)
+            print(item['종목코드'])

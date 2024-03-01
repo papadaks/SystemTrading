@@ -122,7 +122,7 @@ class Kiwoom(QAxWidget):
         else:
             self.has_next_tr_data = False
 
-        if rqname == "opt10081_req":
+        if rqname == "opt10081_req":    # 주식일봉차트조회요청
             ohlcv = {'date': [], 'open': [], 'high': [], 'low': [], 'close': [], 'volume': []}
 
             for i in range(tr_data_cnt):
@@ -142,12 +142,12 @@ class Kiwoom(QAxWidget):
 
             self.tr_data = ohlcv
 
-        elif rqname == "opw00001_req":
+        elif rqname == "opw00001_req":      #예수금 상세현황 요청
             deposit = self.dynamicCall("GetCommData(QString, QString, int, QString", trcode, rqname, 0, "주문가능금액")
             self.tr_data = int(deposit)
             print(self.tr_data)
 
-        elif rqname == "opt10075_req":
+        elif rqname == "opt10075_req":  # 미체결요청
             for i in range(tr_data_cnt):
                 code = self.dynamicCall("GetCommData(QString, QString, int, QString", trcode, rqname, i, "종목코드")
                 code_name = self.dynamicCall("GetCommData(QString, QString, int, QString", trcode, rqname, i, "종목명")
@@ -198,7 +198,7 @@ class Kiwoom(QAxWidget):
 
             self.tr_data = self.order
 
-        elif rqname == "opw00018_req":
+        elif rqname == "opw00018_req":      # 계좌 평가잔고 내역요청
             for i in range(tr_data_cnt):
                 code = self.dynamicCall("GetCommData(QString, QString, int, QString", trcode, rqname, i, "종목번호")
                 code_name = self.dynamicCall("GetCommData(QString, QString, int, QString", trcode, rqname, i, "종목명")
@@ -330,8 +330,8 @@ class Kiwoom(QAxWidget):
         time.sleep(0.5)
 
     def _on_receive_real_data(self, s_code, real_type, real_data):
-        print ("call _on_receive_real_data")
-        print (s_code, real_type)
+        #print ("call _on_receive_real_data")
+        #print (s_code, real_type)
         if real_type == "장시작시간":
             pass
 
@@ -369,7 +369,7 @@ class Kiwoom(QAxWidget):
             accum_volume = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid('누적거래량'))
             accum_volume = abs(int(accum_volume))
 
-            print(s_code, signed_at, close, high, open, low, top_priority_ask, top_priority_bid, accum_volume)
+            #print(s_code, signed_at, close, high, open, low, top_priority_ask, top_priority_bid, accum_volume)
 
             # universe_realtime_transaction_info 딕셔너리에 종목코드가 키값으로 존재하지 않는다면 생성(해당 종목 실시간 데이터 최초 수신시)
             if s_code not in self.universe_realtime_transaction_info:

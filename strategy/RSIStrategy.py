@@ -165,6 +165,7 @@ class RSIStrategy(QThread):
                     # (3)보유 종목인지 확인
                     elif code in self.kiwoom.balance.keys():
                         print('보유 종목', self.kiwoom.balance[code])
+                        print('잔고', self.kiwoom.balance[code]['보유수량'])
                         # (6)매도 대상 확인
                         if self.check_sell_signal(code):
                             # (7)매도 대상이면 매도 주문 접수

@@ -14,17 +14,29 @@ class PBC_Buy1st (QThread):
         self.kiwoom = Kiwoom()
 
         # 주문할 ticker를 담을 딕셔너리
-        self.target_items = {
-            '종목코드' : "005930",
+        self.target_items = [
+            {
+            '종목코드' : "041020",
             'is시가Down'    : False,   #시가 아래로 내려가면 True
             'is시가UpAgain' : False,   #시가 아래로 갔다 올라오면 True
             '감시시작' : 0,     # 0 감시시작x 1 시작 
             '매수여부' : 0,     # 0 매수안함, 1 매수
             '매도여부' : 0,     # 0 매도안함, 1 매도
-            }
-        self.target_data = {
-            "0005930" : (False, False, False, False, False)
-        }
+            },
+             {
+            '종목코드' : "000270",
+            'is시가Down'    : False,   #시가 아래로 내려가면 True
+            'is시가UpAgain' : False,   #시가 아래로 갔다 올라오면 True
+            '감시시작' : 0,     # 0 감시시작x 1 시작 
+            '매수여부' : 0,     # 0 매수안함, 1 매수
+            '매도여부' : 0,     # 0 매도안함, 1 매도
+            },
+            ]
+        for item in self.target_items:
+            print(item)
+            print(item['종목코드'])
+        
+
         # 계좌 예수금
         self.deposit = 0
 
@@ -73,8 +85,10 @@ class PBC_Buy1st (QThread):
     def check_and_get_target_items(self):
         """관심종목 존재하는지 확인하고 없으면 생성하는 함수"""
         fids = get_fid("체결시간")
-        codes = self.target_items['종목코드']
-        self.kiwoom.set_real_reg("9999", codes, fids, "0")
+        for item in self.target_items:
+            codes = item['종목코드']
+            print ('체결시간 실시간 요청 완료 :', codes)
+            self.kiwoom.set_real_reg("9999", codes, fids, "0")
        
     def run(self):
         """실질적 수행 역할을 하는 함수"""
@@ -86,29 +100,33 @@ class PBC_Buy1st (QThread):
                     # time.sleep(1 * 60)
                     # continue
 
-                for code in self.target_items:
-                    print (code)
+                for item in self.target_items:
+                    #print (code)
+                    code = item['종목코드']
 
                     # (1)접수한 주문이 있는지 확인
                     if code in self.kiwoom.order.keys():
                         # (2)주문이 있음
-                        print('접수 주문', self.kiwoom.order[code])
+                        #print('접수 주문', self.kiwoom.order[code])
 
                         # (2.1) '미체결수량' 확인하여 미체결 종목인지 확인
                         if self.kiwoom.order[code]['미체결수량'] > 0:
                             pass
+
                     # (3)보유 종목인지 확인
-                    elif code in self.kiwoom.balance.keys():
-                        print('보유 종목', self.kiwoom.balance[code])
+                    if code in self.kiwoom.balance.keys():
+                        #print('보유 종목', self.kiwoom.balance[code])
+                        print('보유수량', self.kiwoom.balance[code]['보유수량'])
                         # (6)매도 대상 확인
-                        if self.check_sell_signal(code):
-                            # (7)매도 대상이면 매도 주문 접수
-                            self.order_sell(code)
+                        if self.kiwoom.balance[code]['보유수량'] > 0:
+                            if self.check_sell_signal(code):
+                                # (7)매도 대상이면 매도 주문 접수
+                                self.order_sell(code)
 
                     else:
                         # (4)접수 주문 및 보유 종목이 아니라면 매수대상인지 확인 후 주문접수
                         self.check_buy_signal_and_order(code)
-                        #print ("444")
+                        print ("444")
 
                     time.sleep(0.3)
             except Exception as e:
@@ -118,7 +136,7 @@ class PBC_Buy1st (QThread):
 
     def check_sell_signal(self, code):
         """매도대상인지 확인하는 함수"""
-        universe_item = self.universe[code]
+        #universe_item = self.universe[code]
 
         # (1)현재 체결정보가 존재하지 않는지 확인
         if code not in self.kiwoom.universe_realtime_transaction_info.keys():
@@ -139,10 +157,12 @@ class PBC_Buy1st (QThread):
 
         # 다시 시가 아래로 내려가면 매도 (손절)
         if close < open: 
+            print ("시가아래로 내려감 ! 손절!!!")
             return True
         
         #수익보고 익절 해야 함. (익절)
         if close > (open + ((open * 2) / 100)):
+            print ("익절... 조건은 시가에 샀다고 치고..  내려감 ! 손절!!!")
             return True
 
         return False
@@ -155,7 +175,7 @@ class PBC_Buy1st (QThread):
         # 최우선 매도 호가 확인
         ask = self.kiwoom.universe_realtime_transaction_info[code]['(최우선)매도호가']
 
-        order_result = self.kiwoom.send_order('send_sell_order', '1001', 2, code, quantity, ask, '00')
+        order_result = self.kiwoom.send_order('send_sell_order', '1001', 2, code, quantity, ask, '03', '00')
 
         # LINE 메시지를 보내는 부분
         message = "[{}]sell order is done! quantity:{}, ask:{}, order_result:{}".format(code, quantity, ask,
@@ -195,6 +215,7 @@ class PBC_Buy1st (QThread):
                 self.target_items['is시가Down'] = True
             pass    
 
+        self.target_items['is시가Down'] = True      # test
         if close >= open:   #현재가가 시가보다 크거나 같으면.. (상승)
             if self.target_items['is시가Down'] is True:
                 # 다시 올라오면 매수. 
