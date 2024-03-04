@@ -99,7 +99,7 @@ print (target_codes)
 # print (target_codes['005930'].keys)
 
 # 주문할 ticker를 담을 딕셔너리
-self.target_items = [
+target_items = [
             {
             '종목코드' : "041020",
             'is시가Down'    : False,   #시가 아래로 내려가면 True
@@ -117,6 +117,13 @@ self.target_items = [
             '매도여부' : 0,     # 0 매도안함, 1 매도
             },
             ]
-for item in self.target_items:
+for item in target_items:
     print(item)
     print(item['종목코드'])
+
+# universe 딕셔너리의 key값들은 종목코드들을 의미
+#codes = universe.keys()
+
+# 종목코드들을 ';'을 기준으로 묶어주는 작업
+#codes = ";".join(map(str, codes))
+

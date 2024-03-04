@@ -179,10 +179,15 @@ class PBC_Buy1st (QThread):
     def check_and_get_target_items(self):
         """관심종목 존재하는지 확인하고 없으면 생성하는 함수"""
         fids = get_fid("체결시간")
+        idx = 0
         for item in self.target_items:
             codes = item['종목코드']
             print ('체결시간 실시간 요청 완료 :', codes)
-            self.kiwoom.set_real_reg("9999", codes, fids, "0")
+            if idx == 0:
+                self.kiwoom.set_real_reg("9999", codes, fids, "0")      # "0" 최초, "1" 추가 등록 
+                idx = idx + 1
+            else:
+                self.kiwoom.set_real_reg("9999", codes, fids, "1")      # 첨부터 1이어도 등록한다고는 함. 
        
     def run(self):
         """실질적 수행 역할을 하는 함수"""

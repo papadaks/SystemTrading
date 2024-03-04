@@ -336,16 +336,16 @@ class Kiwoom(QAxWidget):
             pass
 
         # 장시작 전. 
-        if real_type == "주식예상체결":
-            signed_at = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("체결시간"))
+        #if real_type == "주식예상체결":
+        #    signed_at = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("체결시간"))
 
-            close = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("현재가"))
-            close = abs(int(close))
+        #    close = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("현재가"))
+        #    close = abs(int(close))
 
-            print (signed_at, close)
-            pass
+        #    print (signed_at, close)
+        #    pass
 
-        elif real_type == "주식체결":
+        if real_type == "주식체결":
             signed_at = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("체결시간"))
 
             close = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("현재가"))
@@ -369,7 +369,7 @@ class Kiwoom(QAxWidget):
             accum_volume = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid('누적거래량'))
             accum_volume = abs(int(accum_volume))
 
-            #print(s_code, signed_at, close, high, open, low, top_priority_ask, top_priority_bid, accum_volume)
+            print(s_code, signed_at, close, high, open, low, top_priority_ask, top_priority_bid, accum_volume)
 
             # universe_realtime_transaction_info 딕셔너리에 종목코드가 키값으로 존재하지 않는다면 생성(해당 종목 실시간 데이터 최초 수신시)
             if s_code not in self.universe_realtime_transaction_info:
