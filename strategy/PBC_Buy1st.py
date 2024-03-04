@@ -25,6 +25,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절 
             '매수시현재가'       : 0,     # 매수 가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
              {
             '종목코드' : "042700",
@@ -36,6 +37,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             {
             '종목코드' : "086790",
@@ -47,6 +49,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             {
             '종목코드' : "031980",
@@ -58,6 +61,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             {
             '종목코드' : "000270",
@@ -69,6 +73,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             {
             '종목코드' : "028300",
@@ -80,6 +85,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             {
             '종목코드' : "457190",
@@ -91,6 +97,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             {
             '종목코드' : "317330",
@@ -102,6 +109,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             {
             '종목코드' : "405100",
@@ -113,6 +121,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             {
             '종목코드' : "399720",
@@ -124,6 +133,7 @@ class PBC_Buy1st (QThread):
             '목표수익율'        : 2,        # 2% 수익나면 익절
             '매수시현재가'      : 0,     # 매수가격
             '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
             },
             ]
         for item in self.target_items:
@@ -206,21 +216,23 @@ class PBC_Buy1st (QThread):
                     # (1)접수한 주문이 있는지 확인
                     if code in self.kiwoom.order.keys():
                         # (2)주문이 있음
-                        #print('접수 주문', self.kiwoom.order[code])
+                        print('접수 주문', self.kiwoom.order[code])
 
                         # (2.1) '미체결수량' 확인하여 미체결 종목인지 확인
                         if self.kiwoom.order[code]['미체결수량'] > 0:
                             pass
 
                     # (3)보유 종목인지 확인
-                    if code in self.kiwoom.balance.keys():
+                    elif code in self.kiwoom.balance.keys():
                         #print('보유 종목', self.kiwoom.balance[code])
                         print('보유수량', self.kiwoom.balance[code]['보유수량'])
                         # (6)매도 대상 확인
                         if self.kiwoom.balance[code]['보유수량'] > 0:
                             if self.check_sell_signal(code, item):
                                 # (7)매도 대상이면 매도 주문 접수
-                                self.order_sell(code)
+                                # hts에서 매도해 보자. 
+                                print ("call order_sell")
+                                #self.order_sell(code)
 
                     else:
                         # (4)접수 주문 및 보유 종목이 아니라면 매수대상인지 확인 후 주문접수
@@ -317,6 +329,7 @@ class PBC_Buy1st (QThread):
         2. 매수는 한종목 당 일일 1번만 한다. 
         """
         if item['CntAfterOrder'] >= 1:
+            print ("오늘 한번 매수 했음")
             return
 
         if close < open:

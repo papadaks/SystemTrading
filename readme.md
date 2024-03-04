@@ -64,6 +64,7 @@ https://doc.qt.io/qtforpython-5/gettingstarted.html
 https://trustyou.tistory.com/  // 참고사이트
 https://auto-trading.tistory.com/category/%EC%A3%BC%EC%8B%9D%20%EC%9E%90%EB%8F%99%EB%A7%A4%EB%A7%A4%20%EA%B0%95%EC%9D%98
 https://cafe.naver.com/moneytuja/1212?boardType=L
+https://wikidocs.net/book/110  // 파이썬으로 배우는 알고리즘 트레이딩 (개정판-2쇄)
 
 
 
