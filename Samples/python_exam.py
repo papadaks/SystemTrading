@@ -127,3 +127,7 @@ for item in target_items:
 # 종목코드들을 ';'을 기준으로 묶어주는 작업
 #codes = ";".join(map(str, codes))
 
+v = (1000 + ((1000 * 2) / 100))
+print (v)
+v = (1000 - ((1000 * 1) / 100))
+print (v)
