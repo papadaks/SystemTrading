@@ -131,3 +131,18 @@ v = (1000 + ((1000 * 2) / 100))
 print (v)
 v = (1000 - ((1000 * 1) / 100))
 print (v)
+
+
+import json
+class A:
+    def __init__(self):
+        self.json = []
+         #self.json.append( [code,open,high,low,close,volume])
+        self.json.append( [1,23,43,23,23,245])
+        self.jsonCount = 1000
+        if self.jsonCount % 1000 == 0:
+            print(self.json)
+            with open('self.json','w') as f:
+                json.dump(self.json,f)
+ 
+a = A()
