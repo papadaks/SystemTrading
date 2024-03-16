@@ -32,22 +32,37 @@ class PBC_Buy1st (QThread):
 
         #for i in range(1, 6):
         #    logger.info(f'{i} 번째 접속')
+        import os
+        print('current directory:',os.getcwd())
+        self.target_items = []
+        import csv
+        with open('strategy/pbc_1st_sample.csv','r') as f:
+            target_item = {
+                '종목코드' : "083450",
+                'is시가Down'     : False,    #시가 아래로 내려가면 True   ## 확실하게 하기 위해 -1% 이하로 떨어졌다가 올라올때 True
+                '주문수량'       : 10,       # 10주, 살수 있는 가격으로 나중에 계산 필요.
+                '매수금액'       : 2000000,  # 매수 금액이 필요할 수 있다.  
+                'CntAfterOrder'    : 0,        # 매수 후 채결정보 받은 cnt,  매수후 바로 팔지 않도록 사용할 수 있음. 
+                'is시가UpAgain'     : False,    #시가 아래로 갔다 올라오면 True
+                '목표수익율'        : 2,        # 2% 수익나면 익절 
+                '매수시현재가'       : 0,     # 매수 가격
+                '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
+                '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
+                }
+        
+            reader = csv.DictReader(f)
+            for row in reader:
+                ti = target_item.copy()
+                ti['종목코드'] = row['종목코드']
+                if row['종목코드']:
+                    self.target_items.append(ti)
+        import pprint
+        pprint.pprint({ 'self.target_items' : self.target_items})
+        # self.target_items[3]
+        quit(0)
 
-        # 주문할 ticker를 담을 딕셔너리
-        self.target_items = [
-            {
-            '종목코드' : "083450",
-            'is시가Down'     : False,    #시가 아래로 내려가면 True   ## 확실하게 하기 위해 -1% 이하로 떨어졌다가 올라올때 True
-            '주문수량'       : 10,       # 10주, 살수 있는 가격으로 나중에 계산 필요.
-            '매수금액'       : 2000000,  # 매수 금액이 필요할 수 있다.  
-            'CntAfterOrder'    : 0,        # 매수 후 채결정보 받은 cnt,  매수후 바로 팔지 않도록 사용할 수 있음. 
-            'is시가UpAgain'     : False,    #시가 아래로 갔다 올라오면 True
-            '목표수익율'        : 2,        # 2% 수익나면 익절 
-            '매수시현재가'       : 0,     # 매수 가격
-            '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
-            '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
-            },
-            ]
+
+        # 주문할 ticker를 담을딕셔너리
         
         self.logger.info('Target Items')
         for item in self.target_items:
@@ -165,6 +180,8 @@ class PBC_Buy1st (QThread):
                         self.check_buy_signal_and_order(code,item)
 
                     time.sleep(0.3)
+                    # Kiwoon.py  에서 받은 json 의 값을 하나하나씩 적용하는 것만 여기 추가하면 됨
+                    # 우리가 수행할때는 --localtest 일 경우 이 내용이 수행되게 하면 좋을 것임.
             except Exception as e:
                 print(traceback.format_exc())
                 # telegram 메시지를 보내는 부분
