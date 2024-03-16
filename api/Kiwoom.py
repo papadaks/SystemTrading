@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import time
 import pandas as pd
+import json
 from util.const import *
 
 
@@ -30,6 +31,13 @@ class Kiwoom(QAxWidget):
         self.balance = {}
         # 실시간 체결정보를 저장할 딕셔너리 선언
         self.universe_realtime_transaction_info = {}
+        # 실시가 호가잔량를 저장할 딕셔너리 선언
+        self.kiwoom_realtime_hoga_info = {}
+
+        self.json_f = []
+        self.jsonCount = 0
+        self.json_f2 = []
+        self.jsonCount2 = 0
 
     #  Kiwoom class가 api를 사용할 수 있도록
     def _make_kiwoom_instance(self):
@@ -345,6 +353,178 @@ class Kiwoom(QAxWidget):
         #    print (signed_at, close)
         #    pass
 
+        if real_type == "주식호가잔량":
+            print ("hoga----------------------------------------")
+            signed_at = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("호가시간"))
+            total_hoga_sell = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 총잔량"))
+            total_hoga_sell = abs(int(total_hoga_sell))
+            total_hoga_sell_b_rate = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 총잔량 직전대비"))
+            total_hoga_sell_b_rate = abs(int(total_hoga_sell_b_rate))
+
+            hoga_sell_1 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가1"))
+            hoga_sell_1 = abs(int(hoga_sell_1))
+            hoga_sell_2 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가2"))
+            hoga_sell_2 = abs(int(hoga_sell_2))
+            hoga_sell_3 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가3"))
+            hoga_sell_3 = abs(int(hoga_sell_3))
+            hoga_sell_4 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가4"))
+            hoga_sell_4 = abs(int(hoga_sell_4))
+            hoga_sell_5 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가5"))
+            hoga_sell_5 = abs(int(hoga_sell_5))
+            hoga_sell_6 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가6"))
+            hoga_sell_6 = abs(int(hoga_sell_6))
+            hoga_sell_7 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가7"))
+            hoga_sell_7 = abs(int(hoga_sell_7))
+            hoga_sell_8 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가8"))
+            hoga_sell_8 = abs(int(hoga_sell_8))
+            hoga_sell_9 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가9"))
+            hoga_sell_9 = abs(int(hoga_sell_9))
+            hoga_sell_10 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가10"))
+            hoga_sell_10 = abs(int(hoga_sell_10))
+            
+            hoga_sell_1_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량1"))
+            hoga_sell_1_cnt = abs(int(hoga_sell_1_cnt))
+            hoga_sell_2_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량2"))
+            hoga_sell_2_cnt = abs(int(hoga_sell_2_cnt))
+            hoga_sell_3_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량3"))
+            hoga_sell_3_cnt = abs(int(hoga_sell_3_cnt))
+            hoga_sell_4_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량4"))
+            hoga_sell_4_cnt = abs(int(hoga_sell_4_cnt))
+            hoga_sell_5_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량5"))
+            hoga_sell_5_cnt = abs(int(hoga_sell_5_cnt))
+            hoga_sell_6_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량6"))
+            hoga_sell_6_cnt = abs(int(hoga_sell_6_cnt))
+            hoga_sell_7_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량7"))
+            hoga_sell_7_cnt = abs(int(hoga_sell_7_cnt))
+            hoga_sell_8_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량8"))
+            hoga_sell_8_cnt = abs(int(hoga_sell_8_cnt))
+            hoga_sell_9_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량9"))
+            hoga_sell_9_cnt = abs(int(hoga_sell_9_cnt))
+            hoga_sell_10_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 수량10"))
+            hoga_sell_10_cnt = abs(int(hoga_sell_10_cnt))
+            
+            
+
+            total_hoga_buy = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 총잔량"))
+            total_hoga_buy = abs(int(total_hoga_buy))
+
+            total_hoga_buy_b_rate = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 총잔량 직전대비"))
+            total_hoga_buy_b_rate = abs(int(total_hoga_sell_b_rate))
+
+            hoga_buy_1 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가1"))
+            hoga_buy_1 = abs(int(hoga_buy_1))
+            hoga_buy_2 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가2"))
+            hoga_buy_2 = abs(int(hoga_buy_2))
+            hoga_buy_3 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가3"))
+            hoga_buy_3 = abs(int(hoga_buy_3))
+            hoga_buy_4 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가4"))
+            hoga_buy_4 = abs(int(hoga_buy_4))
+            hoga_buy_5 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가5"))
+            hoga_buy_5 = abs(int(hoga_buy_5))
+            hoga_buy_6 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가6"))
+            hoga_buy_6 = abs(int(hoga_buy_6))
+            hoga_buy_7 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가7"))
+            hoga_buy_7 = abs(int(hoga_buy_7))
+            hoga_buy_8 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가8"))
+            hoga_buy_8 = abs(int(hoga_buy_8))
+            hoga_buy_9 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가9"))
+            hoga_buy_9 = abs(int(hoga_buy_9))
+            hoga_buy_10 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가10"))
+            hoga_buy_10 = abs(int(hoga_buy_10))
+
+            hoga_buy_1_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량1"))
+            hoga_buy_1_cnt = abs(int(hoga_buy_1_cnt))
+            hoga_buy_2_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량2"))
+            hoga_buy_2_cnt = abs(int(hoga_buy_2_cnt))
+            hoga_buy_3_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량3"))
+            hoga_buy_3_cnt = abs(int(hoga_buy_3_cnt))
+            hoga_buy_4_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량4"))
+            hoga_buy_4_cnt = abs(int(hoga_buy_4_cnt))
+            hoga_buy_5_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량5"))
+            hoga_buy_5_cnt = abs(int(hoga_buy_5_cnt))
+            hoga_buy_6_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량6"))
+            hoga_buy_6_cnt = abs(int(hoga_buy_6_cnt))
+            hoga_buy_7_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량7"))
+            hoga_buy_7_cnt = abs(int(hoga_buy_7_cnt))
+            hoga_buy_8_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량8"))
+            hoga_buy_8_cnt = abs(int(hoga_buy_8_cnt))
+            hoga_buy_9_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량9"))
+            hoga_buy_9_cnt = abs(int(hoga_buy_9_cnt))
+            hoga_buy_10_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매수호가 수량10"))
+            hoga_buy_10_cnt = abs(int(hoga_buy_10_cnt))
+
+            
+
+            #누적거래량
+            total_trade_cnt = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("누적거래량"))
+            total_trade_cnt = abs(int(total_trade_cnt))
+            
+            # kiwoom_realtime_hoga_info 딕셔너리에 종목코드가 키값으로 존재하지 않는다면 생성(해당 종목 실시간 데이터 최초 수신시)
+            if s_code not in self.kiwoom_realtime_hoga_info:
+                self.kiwoom_realtime_hoga_info.update({s_code: {}})
+
+            # 최초 수신 이후 계속 수신되는 데이터는 update를 이용해서 값 갱신
+            self.kiwoom_realtime_hoga_info[s_code].update({
+                "호가시간": signed_at,
+                "누적거래량" : total_trade_cnt, 
+
+                "매도호가 총잔량": total_hoga_sell,
+                "매도호가 총잔량 직전대비" : total_hoga_sell_b_rate,
+                "매도호가1" : hoga_sell_1, 
+                "매도호가2" : hoga_sell_2, 
+                "매도호가3" : hoga_sell_3, 
+                "매도호가4" : hoga_sell_4, 
+                "매도호가5" : hoga_sell_5, 
+                "매도호가6" : hoga_sell_6, 
+                "매도호가7" : hoga_sell_7, 
+                "매도호가8" : hoga_sell_8, 
+                "매도호가9" : hoga_sell_9, 
+                "매도호가10" : hoga_sell_10,  
+
+                "매도호가 수량1" : hoga_sell_1_cnt,
+                "매도호가 수량2" : hoga_sell_2_cnt,
+                "매도호가 수량3" : hoga_sell_3_cnt,
+                "매도호가 수량4" : hoga_sell_4_cnt,
+                "매도호가 수량5" : hoga_sell_5_cnt,
+                "매도호가 수량6" : hoga_sell_6_cnt,
+                "매도호가 수량7" : hoga_sell_7_cnt,
+                "매도호가 수량8" : hoga_sell_8_cnt,
+                "매도호가 수량9" : hoga_sell_9_cnt,
+                "매도호가 수량10" : hoga_sell_10_cnt,
+
+
+                "매수호가 총잔량": total_hoga_buy,
+                "매수호가 총잔량 직전대비" : total_hoga_buy_b_rate,
+                "매수호가1" : hoga_buy_1, 
+                "매수호가2" : hoga_buy_2, 
+                "매수호가3" : hoga_buy_3, 
+                "매수호가4" : hoga_buy_4, 
+                "매수호가5" : hoga_buy_5, 
+                "매수호가6" : hoga_buy_6, 
+                "매수호가7" : hoga_buy_7, 
+                "매수호가8" : hoga_buy_8, 
+                "매수호가9" : hoga_buy_9, 
+                "매수호가10" : hoga_buy_10,
+
+                "매수호가 수량1" : hoga_buy_1_cnt,
+                "매수호가 수량2" : hoga_buy_2_cnt,
+                "매수호가 수량3" : hoga_buy_3_cnt,
+                "매수호가 수량4" : hoga_buy_4_cnt,
+                "매수호가 수량5" : hoga_buy_5_cnt,
+                "매수호가 수량6" : hoga_buy_6_cnt,
+                "매수호가 수량7" : hoga_buy_7_cnt,
+                "매수호가 수량8" : hoga_buy_8_cnt,
+                "매수호가 수량9" : hoga_buy_9_cnt,
+                "매수호가 수량10" : hoga_buy_10_cnt
+
+            })
+
+            self.json_f2.append( [s_code,self.kiwoom_realtime_hoga_info[s_code]])
+            self.jsonCount2 += 1
+            if self.jsonCount2 % 1000 == 0:
+                with open('real_real_hoga.json','w') as f:
+                    json.dump(self.json_f2,f)
+
         if real_type == "주식체결":
             signed_at = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("체결시간"))
 
@@ -354,8 +534,8 @@ class Kiwoom(QAxWidget):
             high = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid('고가'))
             high = abs(int(high))
 
-            open = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid('시가'))
-            open = abs(int(open))
+            open1 = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid('시가'))
+            open1 = abs(int(open1))
 
             low = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid('저가'))
             low = abs(int(low))
@@ -369,7 +549,7 @@ class Kiwoom(QAxWidget):
             accum_volume = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid('누적거래량'))
             accum_volume = abs(int(accum_volume))
 
-            # print(s_code, signed_at, close, high, open, low, top_priority_ask, top_priority_bid, accum_volume)
+            # print(s_code, signed_at, close, high, open1, low, top_priority_ask, top_priority_bid, accum_volume)
 
             # universe_realtime_transaction_info 딕셔너리에 종목코드가 키값으로 존재하지 않는다면 생성(해당 종목 실시간 데이터 최초 수신시)
             if s_code not in self.universe_realtime_transaction_info:
@@ -378,7 +558,7 @@ class Kiwoom(QAxWidget):
             # 최초 수신 이후 계속 수신되는 데이터는 update를 이용해서 값 갱신
             self.universe_realtime_transaction_info[s_code].update({
                 "체결시간": signed_at,
-                "시가": open,
+                "시가": open1,
                 "고가": high,
                 "저가": low,
                 "현재가": close,
@@ -386,3 +566,9 @@ class Kiwoom(QAxWidget):
                 "(최우선)매수호가": top_priority_bid,
                 "누적거래량": accum_volume
             })
+            print ("-------------------------------------")
+            self.json_f.append( [s_code,self.universe_realtime_transaction_info[s_code]])
+            self.jsonCount += 1
+            if self.jsonCount % 10 == 0:
+                with open('real_real_uni.json','w') as f:
+                    json.dump(self.json_f,f)
