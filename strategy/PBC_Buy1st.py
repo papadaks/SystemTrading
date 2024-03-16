@@ -162,6 +162,10 @@ class PBC_Buy1st (QThread):
                     # time.sleep(1 * 60)
                     # continue
 
+                if check_order_wait_closed():                   # if not for test
+                    print("3시까지 매도가 안되었으면 매도한다.")
+                    self.all_order_sell()
+
                 for item in self.target_items:
                     #print (code)
                     code = item['종목코드']
@@ -201,6 +205,14 @@ class PBC_Buy1st (QThread):
                 print(traceback.format_exc())
                 # telegram 메시지를 보내는 부분
                 send_message_bot(traceback.format_exc(), 0)
+
+    def all_order_sell(self):
+        """ 보유 종목 전체 매도 함수"""
+        for item in self.target_items:
+            code = item['종목코드']
+            print ("all_order_sell", code)
+            if code in self.kiwoom.balance.keys():
+                self.order_sell(code)
 
     def check_sell_signal(self, code, item):
         """매도대상인지 확인하는 함수"""
