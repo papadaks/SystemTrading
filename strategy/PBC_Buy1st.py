@@ -36,7 +36,7 @@ class PBC_Buy1st (QThread):
         print('current directory:',os.getcwd())
         self.target_items = []
         import csv
-        with open('strategy/pbc_1st_sample.csv','r') as f:
+        with open('./pbc_1st_sample.csv','r') as f:
             target_item = {
                 '종목코드' : "083450",
                 'is시가Down'     : False,    #시가 아래로 내려가면 True   ## 확실하게 하기 위해 -1% 이하로 떨어졌다가 올라올때 True
@@ -52,14 +52,18 @@ class PBC_Buy1st (QThread):
         
             reader = csv.DictReader(f)
             for row in reader:
+                print ("code", row['종목코드'])
                 ti = target_item.copy()
+
                 ti['종목코드'] = row['종목코드']
+                
                 if row['종목코드']:
+                    ti['종목코드'] = ti['종목코드'][1:]
                     self.target_items.append(ti)
         import pprint
         pprint.pprint({ 'self.target_items' : self.target_items})
         # self.target_items[3]
-        quit(0)
+        #quit(0)
 
 
         # 주문할 ticker를 담을딕셔너리
