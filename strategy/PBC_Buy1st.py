@@ -6,42 +6,33 @@ from util.notifier import *
 import math
 import traceback
 import logging
+import os
+import csv
 
 class PBC_Buy1st (QThread):
-    def __init__(self):
+    def __init__(self, parent):
+        super().__init__(parent)
         QThread.__init__(self)
+        self.parent = parent
+
         self.strategy_name = "PBC_Buy1st"
         self.kiwoom = Kiwoom()
 
         self.logger = logging.getLogger(name='PBC_Buy1st')
-        self.logger.setLevel(logging.DEBUG)
-        print(self.logger)
-
-        formatter = logging.Formatter('|%(asctime)s||%(name)s||%(levelname)s| %(message)s', datefmt='%Y-%m-%d %H:%M:%S') 
-
-        if self.logger.hasHandlers():            ## 핸들러 존재 여부    
-            self.logger.handlers.clear()         ## 핸들러 삭제
-
-    #    stream_handler = logging.StreamHandler()    ## 스트림 핸들러 생성
-    #    stream_handler.setFormatter(formatter)      ## 텍스트 포맷 설정
-    #    logger.addHandler(stream_handler)           ## 핸들러 등록
-
-        file_handler = logging.FileHandler('test.log', mode='w')  ## 파일 핸들러 생성  mode='a'
-        file_handler.setFormatter(formatter)            ## 텍스트 포맷 설정
-        self.logger.addHandler(file_handler)                 ## 핸들러 등록
+        self._init_logger()
 
         #for i in range(1, 6):
         #    logger.info(f'{i} 번째 접속')
-        import os
+
         print('current directory:',os.getcwd())
         self.target_items = []
-        import csv
+ 
         with open('./pbc_1st_sample.csv','r') as f:
             target_item = {
                 '종목코드' : "083450",
                 'is시가Down'     : False,    #시가 아래로 내려가면 True   ## 확실하게 하기 위해 -1% 이하로 떨어졌다가 올라올때 True
                 '주문수량'       : 10,       # 10주, 살수 있는 가격으로 나중에 계산 필요.
-                '매수금액'       : 2000000,  # 매수 금액이 필요할 수 있다.  
+                '매수금액'       : 1000000,  # 매수 금액이 필요할 수 있다.  
                 'CntAfterOrder'    : 0,        # 매수 후 채결정보 받은 cnt,  매수후 바로 팔지 않도록 사용할 수 있음. 
                 'is시가UpAgain'     : False,    #시가 아래로 갔다 올라오면 True
                 '목표수익율'        : 2,        # 2% 수익나면 익절 
@@ -58,7 +49,7 @@ class PBC_Buy1st (QThread):
                 ti['종목코드'] = row['종목코드']
                 
                 if row['종목코드']:
-                    ti['종목코드'] = ti['종목코드'][1:]
+                    ti['종목코드'] = ti['종목코드'][1:]     #csv파리에서 읽으면. `000020 으로 읽어져 `을빼고 저장. 
                     self.target_items.append(ti)
         import pprint
         pprint.pprint({ 'self.target_items' : self.target_items})
@@ -84,6 +75,26 @@ class PBC_Buy1st (QThread):
 
         self.init_strategy()
 
+    """ 
+        init logger
+    """
+    def _init_logger(self):
+        
+        self.logger.setLevel(logging.DEBUG)
+        print(self.logger)
+
+        formatter = logging.Formatter('|%(asctime)s||%(name)s||%(levelname)s| %(message)s', datefmt='%Y-%m-%d %H:%M:%S') 
+
+        if self.logger.hasHandlers():            ## 핸들러 존재 여부    
+            self.logger.handlers.clear()         ## 핸들러 삭제
+
+    #    stream_handler = logging.StreamHandler()    ## 스트림 핸들러 생성
+    #    stream_handler.setFormatter(formatter)      ## 텍스트 포맷 설정
+    #    logger.addHandler(stream_handler)           ## 핸들러 등록
+            
+        file_handler = logging.FileHandler('PBC_Buy1st.log', mode='w')  ## 파일 핸들러 생성  mode='a'
+        file_handler.setFormatter(formatter)            ## 텍스트 포맷 설정
+        self.logger.addHandler(file_handler)                 ## 핸들러 등록
 
     def init_strategy(self):
         """전략 초기화 기능을 수행하는 함수"""
