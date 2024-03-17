@@ -16,7 +16,7 @@ def check_transaction_closed():
     return end_time < now
 
 def check_order_wait_closed():
-    """현재 시간이 3시 인지인지 확인하는 함수"""
+    """현재 시간이 3시 ~ 3시 10분 사이 인지 확인하는 함수"""
     now = datetime.now()
     start_time = now.replace(hour=15, minute=0, second=0, microsecond=0)
     end_time = now.replace(hour=15, minute=10, second=0, microsecond=0)

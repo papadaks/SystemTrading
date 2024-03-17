@@ -11,6 +11,14 @@ import csv
 
 class PBC_Buy1st (QThread):
     def __init__(self, parent):
+        """
+        클래스 선언시에는 parent를 꼭 넣는다.
+        def __init__(self, parent):
+        self.parent = parent
+        접근은
+        self.parent.parent 와 같이 단계단계 올라간다.
+        self.parent.parent.메쏘드()
+        """
         super().__init__(parent)
         QThread.__init__(self)
         self.parent = parent
@@ -32,7 +40,7 @@ class PBC_Buy1st (QThread):
                 '종목코드' : "083450",
                 'is시가Down'     : False,    #시가 아래로 내려가면 True   ## 확실하게 하기 위해 -1% 이하로 떨어졌다가 올라올때 True
                 '주문수량'       : 10,       # 10주, 살수 있는 가격으로 나중에 계산 필요.
-                '매수금액'       : 1000000,  # 매수 금액이 필요할 수 있다.  
+                '매수금액'       : 100000,  # 매수 금액이 필요할 수 있다. (비중)  
                 'CntAfterOrder'    : 0,        # 매수 후 채결정보 받은 cnt,  매수후 바로 팔지 않도록 사용할 수 있음. 
                 'is시가UpAgain'     : False,    #시가 아래로 갔다 올라오면 True
                 '목표수익율'        : 2,        # 2% 수익나면 익절 
@@ -49,7 +57,7 @@ class PBC_Buy1st (QThread):
                 ti['종목코드'] = row['종목코드']
                 
                 if row['종목코드']:
-                    ti['종목코드'] = ti['종목코드'][1:]     #csv파리에서 읽으면. `000020 으로 읽어져 `을빼고 저장. 
+                    ti['종목코드'] = ti['종목코드'][1:]     #csv파일에서 읽으면. `000020 으로 읽어져 `을빼고 저장. 
                     self.target_items.append(ti)
         import pprint
         pprint.pprint({ 'self.target_items' : self.target_items})
@@ -85,16 +93,16 @@ class PBC_Buy1st (QThread):
 
         formatter = logging.Formatter('|%(asctime)s||%(name)s||%(levelname)s| %(message)s', datefmt='%Y-%m-%d %H:%M:%S') 
 
-        if self.logger.hasHandlers():            ## 핸들러 존재 여부    
-            self.logger.handlers.clear()         ## 핸들러 삭제
+        if self.logger.hasHandlers():                   ## 핸들러 존재 여부    
+            self.logger.handlers.clear()                ## 핸들러 삭제
 
-    #    stream_handler = logging.StreamHandler()    ## 스트림 핸들러 생성
-    #    stream_handler.setFormatter(formatter)      ## 텍스트 포맷 설정
-    #    logger.addHandler(stream_handler)           ## 핸들러 등록
+    #    stream_handler = logging.StreamHandler()       ## 스트림 핸들러 생성
+    #    stream_handler.setFormatter(formatter)         ## 텍스트 포맷 설정
+    #    logger.addHandler(stream_handler)              ## 핸들러 등록
             
         file_handler = logging.FileHandler('PBC_Buy1st.log', mode='w')  ## 파일 핸들러 생성  mode='a'
         file_handler.setFormatter(formatter)            ## 텍스트 포맷 설정
-        self.logger.addHandler(file_handler)                 ## 핸들러 등록
+        self.logger.addHandler(file_handler)            ## 핸들러 등록
 
     def init_strategy(self):
         """전략 초기화 기능을 수행하는 함수"""
@@ -179,8 +187,9 @@ class PBC_Buy1st (QThread):
                         # (2.1) '미체결수량' 확인하여 미체결 종목인지 확인
                         if self.kiwoom.order[code]['미체결수량'] > 0:
                             pass
-                    if code in self.kiwoom.kiwoom_realtime_hoga_info.keys():
-                        self.logger.info(f'호가(kiwoom.hoga) : {self.kiwoom.kiwoom_realtime_hoga_info[code]}')
+                    # 체결정보 들어올때, 이용하려는 것이다. 
+                    #if code in self.kiwoom.kiwoom_realtime_hoga_info.keys():
+                    #    self.logger.info(f'호가(kiwoom.hoga) : {self.kiwoom.kiwoom_realtime_hoga_info[code]}')
 
                     # (3)보유 종목인지 확인
                     if code in self.kiwoom.balance.keys():
@@ -205,6 +214,8 @@ class PBC_Buy1st (QThread):
                 print(traceback.format_exc())
                 # telegram 메시지를 보내는 부분
                 send_message_bot(traceback.format_exc(), 0)
+
+        #while end
 
     def all_order_sell(self):
         """ 보유 종목 전체 매도 함수"""
@@ -236,11 +247,14 @@ class PBC_Buy1st (QThread):
         #print (today_price_data)
 
         self.logger.info(f'실시간 체결정보: check_sell {code} 시가 {open}, 고가 {high}, 저가 {low}, 현재가 {close}, 누적거래량 {volume}')
+        # 당연히 들어 왔을 거라 보고 찍기. null인지 체크가 필요할까? 
+        self.logger.info(f'실시간 호간잔량: check_sell {self.kiwoom.kiwoom_realtime_hoga_info[code]}')
 
         # 사자마자 팔지 않도록 조치가 필요하다. (때로는)
         item['CntAfterOrder'] = item['CntAfterOrder'] + 1
         if item['CntAfterOrder'] < 10:      #10번정도 체결정보를 받은 후 결정.
             print ("매수한지 얼마 안되었다 조금 기다리자. ")
+            #self.logger.info(f'실시간 체결정보: check_sell {item['CntAfterOrder']}')
             return False
         
         # 다시 시가 아래로 내려가면 매도 (손절)
@@ -250,8 +264,8 @@ class PBC_Buy1st (QThread):
             return True
         
         #수익보고 익절 해야 함. (익절)
-        if close > (open + ((open * item['목표수익율']) / 100)):
-            print ("익절... 조건은 시가에 샀다고 치고..  내려감 ! 손절!!!")
+        if close >= (open + ((open * item['목표수익율']) / 100)):
+            print ("익절... 조건은 시가에 샀다고 치고.. 익절 !!!")
             return True
 
         return False
@@ -298,10 +312,15 @@ class PBC_Buy1st (QThread):
         today_price_data = [open, high, low, close, volume]
 
         self.logger.info(f'실시간 체결정보: check_buy {code} 시가 {open}, 고가 {high}, 저가 {low}, 현재가 {close}, 누적거래량 {volume}')
+        # 당연히 들어 왔을 거라 보고 찍기. null인지 체크가 필요할까? 
+        self.logger.info(f'실시간 호간잔량: check_buy {self.kiwoom.kiwoom_realtime_hoga_info[code]}')
+
 
         """ 매수조건
         1. 현재가가 시가 아래로 내렸갔다 올라와야 한다. 
+            1.1 -1% 까지 내려 갔다 올라오게 함 (시간에서 왔다 갔다 하는 종목들이 있음.)
         2. 매수는 한종목 당 일일 1번만 한다. 
+            2.1 -시가를 터치하고 다시 내려가는 아이들은 재 매수를 할 수 도 있을 것 같다.. (추후 고려사항)
         """
         if item['CntAfterOrder'] >= 1:
             print ("오늘 한번 매수 했음")
@@ -325,12 +344,13 @@ class PBC_Buy1st (QThread):
                 item['CntAfterOrder'] = 1           # 1이상이면 매수했다는 의미
                 item['매수시현재가'] = close
                 item['매수시저가'] = low
-                # 주문 수량
-                quantity = item['주문수량']
+                # 주문 수량 : 비중에 설정된 량만큼.  item['매수금액'] , 올림 math.ceil(i), 내림 math.floor(i) : 버림 : math.trunc(i)
+                quantity = math.ceil(item['매수금액'] / close)
+                #quantity = item['주문수량']
                 bid = close         # 시장가 매수라 영향은 없을 것 같다. 
 
                 # (9)계산을 바탕으로 지정가(00), 시장가(03) 매수 주문 접수
-                order_result = self.kiwoom.send_order('send_buy_order', '1001', 1, code, quantity, bid, '03')
+                order_result = self.kiwoom.send_order('send_buy_order', '1001', 1, code, quantity, 0, '03')
                 print(order_result)
 
                 # _on_chejan_slot가 늦게 동작할 수도 있기 때문에 미리 약간의 정보를 넣어둠

@@ -24,6 +24,7 @@ class Kiwoom(QAxWidget):
 
         # account 정보 800111111; (;로 구분)
         self.account_number = self.get_account_number()
+        print(self.account_number, "------------")
 
         self.tr_event_loop = QEventLoop()
 
@@ -244,6 +245,7 @@ class Kiwoom(QAxWidget):
         time.sleep(0.5)
 
     def get_deposit(self):
+        #print("rrrrrrr", self.account_number)
         self.dynamicCall("SetInputValue(QString, QString)", "계좌번호", self.account_number)
         self.dynamicCall("SetInputValue(QString, QString)", "비밀번호입력매체구분", "00")
         self.dynamicCall("SetInputValue(QString, QString)", "조회구분", "2")
