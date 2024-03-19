@@ -75,6 +75,10 @@ https://wikidocs.net/book/110  // 파이썬으로 배우는 알고리즘 트레�
 - Qt
 https://coding-kindergarten.tistory.com/171
 
+- google 
+https://jofresh.tistory.com/entry/%ED%8C%8C%EC%9D%B4%EC%8D%AC%EA%B5%AC%EA%B8%80%EC%8B%9C%ED%8A%B8-%ED%8C%8C%EC%9D%B4%EC%8D%AC%EC%9C%BC%EB%A1%9C-%EA%B5%AC%EA%B8%80%EC%8A%A4%ED%94%84%EB%A0%88%EB%93%9C%EC%8B%9C%ED%8A%B8-%EC%9E%91%EC%84%B1%ED%95%98%EA%B8%B0with-gspread-%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC
+https://greeksharifa.github.io/references/2023/04/10/gspread-usage/
+
 
 
 - 기능개발 항목
