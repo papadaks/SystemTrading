@@ -29,6 +29,8 @@ class PBC_Buy1st (QThread):
         self.logger = logging.getLogger(name='PBC_Buy1st')
         self._init_logger()
 
+        self.receive_cnt = 0
+
         #for i in range(1, 6):
         #    logger.info(f'{i} 번째 접속')
 
@@ -167,6 +169,7 @@ class PBC_Buy1st (QThread):
                 # (0)장중인지 확인
                 if not check_transaction_open():
                     print("장시간이 아니므로 5분간 대기합니다.")
+                    
                     # time.sleep(1 * 60)
                     # continue
 
@@ -207,13 +210,15 @@ class PBC_Buy1st (QThread):
                         # (4)접수 주문 및 보유 종목이 아니라면 매수대상인지 확인 후 주문접수
                         self.check_buy_signal_and_order(code,item)
 
-                    time.sleep(0.3)
+                    #time.sleep(0.3)
                     # Kiwoon.py  에서 받은 json 의 값을 하나하나씩 적용하는 것만 여기 추가하면 됨
                     # 우리가 수행할때는 --localtest 일 경우 이 내용이 수행되게 하면 좋을 것임.
             except Exception as e:
                 print(traceback.format_exc())
                 # telegram 메시지를 보내는 부분
                 send_message_bot(traceback.format_exc(), 0)
+
+            time.sleep(0.3)
 
         #while end
 
@@ -298,7 +303,10 @@ class PBC_Buy1st (QThread):
         # (1)현재 체결정보가 존재하지 않는지 확인
         if code not in self.kiwoom.universe_realtime_transaction_info.keys():
             # 존재하지 않다면 더이상 진행하지 않고 함수 종료
-            print("매수대상 확인 과정에서 아직 체결정보가 없습니다.")
+            if self.receive_cnt > 100:
+                print("매수대상 확인 과정에서 아직 체결정보가 없습니다.")
+                self.receive_cnt = 0
+            self.receive_cnt += 1
             return
         
         # (2)실시간 체결 정보가 존재하면 현 시점의 시가 / 고가 / 저가 / 현재가 / 누적 거래량이 저장되어 있음

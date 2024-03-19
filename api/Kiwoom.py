@@ -356,7 +356,7 @@ class Kiwoom(QAxWidget):
         #    pass
 
         if real_type == "주식호가잔량":
-            print ("hoga----------------------------------------")
+            #print ("hoga----------------------------------------")
             signed_at = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("호가시간"))
             total_hoga_sell = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("매도호가 총잔량"))
             total_hoga_sell = abs(int(total_hoga_sell))
