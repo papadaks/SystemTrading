@@ -146,3 +146,6 @@ class A:
                 json.dump(self.json,f)
  
 a = A()
+
+oo = 10000
+print (oo - int(((oo * 1) / 100)))

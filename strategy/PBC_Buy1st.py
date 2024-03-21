@@ -45,7 +45,7 @@ class PBC_Buy1st (QThread):
                 '매수금액'       : 100000,  # 매수 금액이 필요할 수 있다. (비중)  
                 'CntAfterOrder'    : 0,        # 매수 후 채결정보 받은 cnt,  매수후 바로 팔지 않도록 사용할 수 있음. 
                 'is시가UpAgain'     : False,    #시가 아래로 갔다 올라오면 True
-                '목표수익율'        : 2,        # 2% 수익나면 익절 
+                '목표수익율'        : 1,        # 2% 수익나면 익절 
                 '매수시현재가'       : 0,     # 매수 가격
                 '매수시저가'        : 0,     # 매수시점 저점 가격 저장으로 매도시 사용 함.
                 '체결수신Cnt'       : 0,     # 체결정보 수신 Cnt
@@ -176,6 +176,7 @@ class PBC_Buy1st (QThread):
                 if check_order_wait_closed():                   # if not for test
                     print("3시까지 매도가 안되었으면 매도한다.")
                     self.all_order_sell()
+                    quit()
 
                 for item in self.target_items:
                     #print (code)
@@ -254,6 +255,10 @@ class PBC_Buy1st (QThread):
         self.logger.info(f'실시간 체결정보: check_sell {code} 시가 {open}, 고가 {high}, 저가 {low}, 현재가 {close}, 누적거래량 {volume}')
         # 당연히 들어 왔을 거라 보고 찍기. null인지 체크가 필요할까? 
         self.logger.info(f'실시간 호간잔량: check_sell {self.kiwoom.kiwoom_realtime_hoga_info[code]}')
+        aaa = self.kiwoom.kiwoom_realtime_hoga_info[code]['매도호가 총잔량']
+        bbb = self.kiwoom.kiwoom_realtime_hoga_info[code]['매수호가 총잔량']
+        self.logger.info(f'매도호가 총잔량 {aaa}')
+        self.logger.info(f'매수호가 총잔량 {bbb}')
 
         # 사자마자 팔지 않도록 조치가 필요하다. (때로는)
         item['CntAfterOrder'] = item['CntAfterOrder'] + 1
@@ -264,12 +269,13 @@ class PBC_Buy1st (QThread):
         
         # 다시 시가 아래로 내려가면 매도 (손절)
         # 시가 아래로 내려오면 (50% 매도), 매수 할 당시의 저가를 내려가면 나머지 50% 매도 할 수도 있다. 
-        if close < (open - ((open * 1) / 100)): 
-            print ("시가아래로 내려감 ! 손절!!! -1% ")
+        #if close < (open - int((open * 1) / 100)): 
+        if close <= low:
+            print ("저가 (시가)아래로 내려감 ! 손절!!! -1% ")
             return True
         
         #수익보고 익절 해야 함. (익절)
-        if close >= (open + ((open * item['목표수익율']) / 100)):
+        if close >= (open + int((open * item['목표수익율']) / 100)):
             print ("익절... 조건은 시가에 샀다고 치고.. 익절 !!!")
             return True
 
@@ -321,7 +327,14 @@ class PBC_Buy1st (QThread):
 
         self.logger.info(f'실시간 체결정보: check_buy {code} 시가 {open}, 고가 {high}, 저가 {low}, 현재가 {close}, 누적거래량 {volume}')
         # 당연히 들어 왔을 거라 보고 찍기. null인지 체크가 필요할까? 
-        self.logger.info(f'실시간 호간잔량: check_buy {self.kiwoom.kiwoom_realtime_hoga_info[code]}')
+
+        if code in self.kiwoom.kiwoom_realtime_hoga_info.keys():
+            self.logger.info(f'실시간 호간잔량: check_buy {self.kiwoom.kiwoom_realtime_hoga_info[code]}')
+            aaa = self.kiwoom.kiwoom_realtime_hoga_info[code]['매도호가 총잔량']
+            bbb = self.kiwoom.kiwoom_realtime_hoga_info[code]['매수호가 총잔량']
+            self.logger.info(f'매도호가 총잔량 {aaa}')
+            self.logger.info(f'매수호가 총잔량 {bbb}')
+
 
 
         """ 매수조건
@@ -330,19 +343,19 @@ class PBC_Buy1st (QThread):
         2. 매수는 한종목 당 일일 1번만 한다. 
             2.1 -시가를 터치하고 다시 내려가는 아이들은 재 매수를 할 수 도 있을 것 같다.. (추후 고려사항)
         """
-        if item['CntAfterOrder'] >= 1:
-            print ("오늘 한번 매수 했음")
-            return
+        #if item['CntAfterOrder'] >= 1:
+        #    print ("오늘 한번 매수 했음")
+        #    return
 
-        #if close < open:
+        if close < open:
             # 시가 아래로 내려 갔다.
-        #    if item['is시가Down'] is not True:
-        #        item['is시가Down'] = True
-        #    pass    
-        if close < (open - ((open * 1) / 100)):
             if item['is시가Down'] is not True:
                 item['is시가Down'] = True
-            pass
+        #    pass    
+        #if close < (open - int((open * 1) / 100)):
+        #    if item['is시가Down'] is not True:
+        #        item['is시가Down'] = True
+        #    pass
 
         # item['is시가Down'] = True      # test
         if close >= open:   #현재가가 시가보다 크거나 같으면.. (상승)

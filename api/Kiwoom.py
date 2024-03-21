@@ -472,6 +472,10 @@ class Kiwoom(QAxWidget):
 
                 "매도호가 총잔량": total_hoga_sell,
                 "매도호가 총잔량 직전대비" : total_hoga_sell_b_rate,
+
+                "매수호가 총잔량": total_hoga_buy,
+                "매수호가 총잔량 직전대비" : total_hoga_buy_b_rate,
+
                 "매도호가1" : hoga_sell_1, 
                 "매도호가2" : hoga_sell_2, 
                 "매도호가3" : hoga_sell_3, 
@@ -495,8 +499,7 @@ class Kiwoom(QAxWidget):
                 "매도호가 수량10" : hoga_sell_10_cnt,
 
 
-                "매수호가 총잔량": total_hoga_buy,
-                "매수호가 총잔량 직전대비" : total_hoga_buy_b_rate,
+
                 "매수호가1" : hoga_buy_1, 
                 "매수호가2" : hoga_buy_2, 
                 "매수호가3" : hoga_buy_3, 
@@ -521,11 +524,11 @@ class Kiwoom(QAxWidget):
 
             })
 
-            self.json_f2.append( [s_code,self.kiwoom_realtime_hoga_info[s_code]])
-            self.jsonCount2 += 1
-            if self.jsonCount2 % 1000 == 0:
-                with open('real_real_hoga.json','w') as f:
-                    json.dump(self.json_f2,f)
+            #self.json_f2.append( [s_code,self.kiwoom_realtime_hoga_info[s_code]])
+            #self.jsonCount2 += 1
+            #if self.jsonCount2 % 1000 == 0:
+            #    with open('real_real_hoga.json','w') as f:
+            #        json.dump(self.json_f2,f)
 
         if real_type == "주식체결":
             signed_at = self.dynamicCall("GetCommRealData(QString, int)", s_code, get_fid("체결시간"))
@@ -568,9 +571,9 @@ class Kiwoom(QAxWidget):
                 "(최우선)매수호가": top_priority_bid,
                 "누적거래량": accum_volume
             })
-            print ("-------------------------------------")
-            self.json_f.append( [s_code,self.universe_realtime_transaction_info[s_code]])
-            self.jsonCount += 1
-            if self.jsonCount % 10 == 0:
-                with open('real_real_uni.json','w') as f:
-                    json.dump(self.json_f,f)
+            #print ("-------------------------------------")
+            #self.json_f.append( [s_code,self.universe_realtime_transaction_info[s_code]])
+            #self.jsonCount += 1
+            #if self.jsonCount % 10 == 0:
+            #    with open('real_real_uni.json','w') as f:
+            #        json.dump(self.json_f,f)
