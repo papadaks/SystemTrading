@@ -132,7 +132,7 @@ logs/
 test*.py
 chart*.py
 
-*.csv
+#*.csv
 *.xlsx
 *.sh
 *temp*.py
